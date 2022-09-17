@@ -1,2 +1,6 @@
 build/
 .ccls
+examples/**/*.o
+examples/**/*.elf
+examples/**/*.map
+examples/**/*.bin
