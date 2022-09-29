@@ -33,14 +33,23 @@
 #define GPIOF_BASE_ADDR         (AHB1PERIPH_BASE_ADDR + 0x1400U)
 #define GPIOG_BASE_ADDR         (AHB1PERIPH_BASE_ADDR + 0x1800U)
 #define GPIOH_BASE_ADDR         (AHB1PERIPH_BASE_ADDR + 0x1C00U)
-
 #define RCC_BASE_ADDR           (AHB1PERIPH_BASE_ADDR + 0x3800U)
+
+/* Base addresses of peripherals hanging on APB1 bus */
+#define USART2_BASE_ADDR        (APB1PERIPH_BASE_ADDR + 0x4400U)
+#define USART3_BASE_ADDR        (APB1PERIPH_BASE_ADDR + 0x4800U)
+#define UART4_BASE_ADDR         (APB1PERIPH_BASE_ADDR + 0x4C00U)
+#define UART5_BASE_ADDR         (APB1PERIPH_BASE_ADDR + 0x5000U)
+
+/* Base addresses of peripherals hanging on APB2 bus */
+#define USART1_BASE_ADDR        (APB2PERIPH_BASE_ADDR + 0x1000U)
+#define USART6_BASE_ADDR        (APB2PERIPH_BASE_ADDR + 0x1400U)
 
 /* Peripheral register definition structures */
 typedef struct
 {
 	__IO uint32_t CR;
-	__IO uint32_t PLL;
+	__IO uint32_t PLLCFGR;
 	__IO uint32_t CFGR;
 	__IO uint32_t CIR;
 	__IO uint32_t AHB1RSTR;
@@ -88,6 +97,17 @@ typedef struct
     __IO uint32_t AFR[2];
 } gpio_regdef_t;
 
+typedef struct
+{
+	__IO uint32_t SR;
+	__IO uint32_t DR;
+	__IO uint32_t BRR;
+	__IO uint32_t CR1;
+	__IO uint32_t CR2;
+	__IO uint32_t CR3;
+	__IO uint32_t GTPR;
+} usart_regdef_t;
+
 /* Peripheral definitions (base addresses type-casted to xxx_regdef_t) */
 #define RCC     ((rcc_regdef_t *) RCC_BASE_ADDR)
 
@@ -99,6 +119,13 @@ typedef struct
 #define GPIOF   ((gpio_regdef_t *) GPIOF_BASE_ADDR)
 #define GPIOG   ((gpio_regdef_t *) GPIOG_BASE_ADDR)
 #define GPIOH   ((gpio_regdef_t *) GPIOH_BASE_ADDR)
+
+#define USART1  ((usart_regdef_t *) USART1_BASE_ADDR)
+#define USART2  ((usart_regdef_t *) USART2_BASE_ADDR)
+#define USART3  ((usart_regdef_t *) USART3_BASE_ADDR)
+#define UART4   ((usart_regdef_t *) UART4_BASE_ADDR)
+#define UART5   ((usart_regdef_t *) UART5_BASE_ADDR)
+#define USART6  ((usart_regdef_t *) USART6_BASE_ADDR)
 
 /* Clock enable macros for GPIOx */
 #define GPIOA_CLK_ENABLE()  (RCC->AHB1ENR |= (1 << 0))
@@ -119,5 +146,21 @@ typedef struct
 #define GPIOF_CLK_DISABLE()  (RCC->AHB1ENR &= ~(1 << 5))
 #define GPIOG_CLK_DISABLE()  (RCC->AHB1ENR &= ~(1 << 6))
 #define GPIOH_CLK_DISABLE()  (RCC->AHB1ENR &= ~(1 << 7))
+
+/* Clock enable macros for USARTx */
+#define USART1_CLK_ENABLE()  (RCC->APB2ENR |= (1 << 4))
+#define USART2_CLK_ENABLE()  (RCC->APB1ENR |= (1 << 17))
+#define USART3_CLK_ENABLE()  (RCC->APB1ENR |= (1 << 18))
+#define UART4_CLK_ENABLE()   (RCC->APB1ENR |= (1 << 19))
+#define UART5_CLK_ENABLE()   (RCC->APB1ENR |= (1 << 20))
+#define USART6_CLK_ENABLE()  (RCC->APB2ENR |= (1 << 5))
+
+/* Clock disable macros for USARTx */
+#define USART1_CLK_DISABLE()  (RCC->APB2ENR &= ~(1 << 4))
+#define USART2_CLK_DISABLE()  (RCC->APB1ENR &= ~(1 << 17))
+#define USART3_CLK_DISABLE()  (RCC->APB1ENR &= ~(1 << 18))
+#define UART4_CLK_DISABLE()   (RCC->APB1ENR &= ~(1 << 19))
+#define UART5_CLK_DISABLE()   (RCC->APB1ENR &= ~(1 << 20))
+#define USART6_CLK_DISABLE()  (RCC->APB2ENR &= ~(1 << 5))
 
 #endif
