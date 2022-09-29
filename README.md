@@ -2,10 +2,10 @@
 
 ## Core drivers: found in drivers/core/
 - [x] gpio (TODO: interrupt mode)
+- [x] uart (TODO: interrupt mode)
 - [ ] rcc
 - [ ] i2c
 - [ ] spi
-- [ ] uart
 - [ ] timer
 - [ ] pwm
 - [ ] can
