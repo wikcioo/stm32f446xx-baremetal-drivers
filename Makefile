@@ -5,7 +5,7 @@ BUILD_DIR = build
 SOURCES  = $(wildcard $(CORE_DRIVERS_DIR)/src/*.c)
 SOURCES += $(wildcard ./*.c)
 OBJECTS  = $(addprefix $(BUILD_DIR)/, $(addsuffix .o, $(basename $(notdir $(SOURCES)))))
-CFLAGS = -c -mcpu=$(MACH) -mthumb -mfloat-abi=soft -std=gnu11 -Wall -O0 -I$(CORE_DRIVERS_DIR)/inc
+CFLAGS = -c -mcpu=$(MACH) -mthumb -mfloat-abi=soft -std=gnu11 -g -Wall -Wformat -Wpedantic -Wshadow -O0 -I$(CORE_DRIVERS_DIR)/inc
 
 .PHONY = all clean
 
