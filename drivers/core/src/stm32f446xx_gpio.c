@@ -10,22 +10,22 @@ void gpio_init(gpio_handle_t *gpio_handle)
 
     /* Configure GPIO pin mode */
     temp_reg = gpio_handle->config.pin_mode << (2 * gpio_handle->config.pin_number);
-    gpio_handle->gpiox->MODER &= ~(0b11 << (2 * gpio_handle->config.pin_number));
+    gpio_handle->gpiox->MODER &= ~(0x3 << (2 * gpio_handle->config.pin_number));
     gpio_handle->gpiox->MODER |= temp_reg;
 
     /* Configure GPIO pin output type */
     temp_reg = gpio_handle->config.pin_output_type << gpio_handle->config.pin_number;
-    gpio_handle->gpiox->OTYPER &= ~(0b1 << gpio_handle->config.pin_number);
+    gpio_handle->gpiox->OTYPER &= ~(0x1 << gpio_handle->config.pin_number);
     gpio_handle->gpiox->OTYPER |= temp_reg;
 
     /* Configure GPIO pin speed */
     temp_reg = gpio_handle->config.pin_speed << (2 * gpio_handle->config.pin_number);
-    gpio_handle->gpiox->OSPEEDR &= ~(0b11 << (2 * gpio_handle->config.pin_number));
+    gpio_handle->gpiox->OSPEEDR &= ~(0x3 << (2 * gpio_handle->config.pin_number));
     gpio_handle->gpiox->OSPEEDR |= temp_reg;
 
     /* Configure GPIO pin pull-up/pull-down */
     temp_reg = gpio_handle->config.pin_pupd << (2 * gpio_handle->config.pin_number);
-    gpio_handle->gpiox->PUPDR &= ~(0b11 << 2 * gpio_handle->config.pin_number);
+    gpio_handle->gpiox->PUPDR &= ~(0x3 << 2 * gpio_handle->config.pin_number);
     gpio_handle->gpiox->PUPDR |= temp_reg;
 
     /* Configure GPIO pin alternate functionality */
@@ -33,7 +33,7 @@ void gpio_init(gpio_handle_t *gpio_handle)
     {
         uint8_t reg_index = gpio_handle->config.pin_number / 8;
         uint8_t bit_pos   = gpio_handle->config.pin_number % 8;
-        gpio_handle->gpiox->AFR[reg_index] &= ~(0b1111 << 4 * bit_pos);
+        gpio_handle->gpiox->AFR[reg_index] &= ~(0xF << 4 * bit_pos);
         gpio_handle->gpiox->AFR[reg_index] |= gpio_handle->config.pin_alt_func << (4 * bit_pos);
     }
 }
