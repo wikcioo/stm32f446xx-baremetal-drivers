@@ -66,13 +66,13 @@ void usart_transmit(usart_handle_t *usart_handle, uint8_t *tx_buffer, uint32_t l
         if (usart_handle->config.word_length == USART_WORD_LENGTH_9BITS)
         {
             uint16_t *data = (uint16_t *)tx_buffer;
-            usart_handle->usartx->DR |= (*data & (uint16_t)0x1FF);
+            usart_handle->usartx->DR = (*data & (uint16_t)0x1FF);
             tx_buffer++;
             if (usart_handle->config.parity == USART_PARITY_NONE) tx_buffer++;
         }
         else
         {
-            usart_handle->usartx->DR |= (*tx_buffer & (uint8_t)0xFF);
+            usart_handle->usartx->DR = (*tx_buffer & (uint8_t)0xFF);
             tx_buffer++;
         }
     }
