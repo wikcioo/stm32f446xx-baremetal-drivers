@@ -82,7 +82,35 @@ void usart_transmit(usart_handle_t *usart_handle, uint8_t *tx_buffer, uint32_t l
 
 void usart_receive(usart_handle_t *usart_handle, uint8_t *rx_buffer, uint32_t length)
 {
+    usart_peripheral_enable(usart_handle->usartx, ENABLE);
 
+    while (length--)
+    {
+        while (!usart_get_flag_status(usart_handle->usartx, USART_FLAG_RXNE));
+
+        if (usart_handle->config.word_length == USART_WORD_LENGTH_9BITS)
+        {
+            if (usart_handle->config.parity == USART_PARITY_NONE)
+            {
+                *(uint16_t *)rx_buffer = usart_handle->usartx->DR & 0x1FF;
+                rx_buffer++; rx_buffer++;
+            }
+            else
+            {
+                *rx_buffer = usart_handle->usartx->DR & 0xFF;
+                rx_buffer++;
+            }
+        }
+        else
+        {
+            if (usart_handle->config.parity == USART_PARITY_NONE)
+                *rx_buffer = (uint8_t)(usart_handle->usartx->DR & (uint8_t)0xFF);
+            else
+                *rx_buffer = (uint8_t)(usart_handle->usartx->DR & (uint8_t)0x7F);
+
+            rx_buffer++;
+        }
+    }
 }
 
 static uint8_t usart_get_flag_status(usart_regdef_t *usartx, uint32_t flag)
