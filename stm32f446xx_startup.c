@@ -131,6 +131,7 @@ uint32_t vectors[] __attribute__((section(".isr_vector"))) = {
     (uint32_t) &TAMP_STAMP_IRQHandler,
     (uint32_t) &RTC_WKUP_IRQHandler,
     (uint32_t) &FLASH_IRQHandler,
+    (uint32_t) &RCC_IRQHandler,
     (uint32_t) &EXTI0_IRQHandler,
     (uint32_t) &EXTI1_IRQHandler,
     (uint32_t) &EXTI2_IRQHandler,
