@@ -44,6 +44,8 @@
 /* Base addresses of peripherals hanging on APB2 bus */
 #define USART1_BASE_ADDR        (APB2PERIPH_BASE_ADDR + 0x1000U)
 #define USART6_BASE_ADDR        (APB2PERIPH_BASE_ADDR + 0x1400U)
+#define SYSCFG_BASE_ADDR        (APB2PERIPH_BASE_ADDR + 0x3800U)
+#define EXTI_BASE_ADDR          (APB2PERIPH_BASE_ADDR + 0x3C00U)
 
 /* Peripheral register definition structures */
 typedef struct
@@ -108,9 +110,28 @@ typedef struct
 	__IO uint32_t GTPR;
 } usart_regdef_t;
 
-/* Peripheral definitions (base addresses type-casted to xxx_regdef_t) */
-#define RCC     ((rcc_regdef_t *) RCC_BASE_ADDR)
+typedef struct
+{
+	__IO uint32_t MEMRMP;
+	__IO uint32_t PMC;
+	__IO uint32_t EXTICR[4];
+		 uint32_t RESERVED0[2];
+	__IO uint32_t CMPCR;
+		 uint32_t RESERVED1[2];
+	__IO uint32_t CFGR;
+} syscfg_regdef_t;
 
+typedef struct
+{
+	__IO uint32_t IMR;
+	__IO uint32_t EMR;
+	__IO uint32_t RTSR;
+	__IO uint32_t FTSR;
+	__IO uint32_t SWIER;
+	__IO uint32_t PR;
+} exti_regdef_t;
+
+/* Peripheral definitions (base addresses type-casted to xxx_regdef_t) */
 #define GPIOA   ((gpio_regdef_t *) GPIOA_BASE_ADDR)
 #define GPIOB   ((gpio_regdef_t *) GPIOB_BASE_ADDR)
 #define GPIOC   ((gpio_regdef_t *) GPIOC_BASE_ADDR)
@@ -126,6 +147,10 @@ typedef struct
 #define UART4   ((usart_regdef_t *) UART4_BASE_ADDR)
 #define UART5   ((usart_regdef_t *) UART5_BASE_ADDR)
 #define USART6  ((usart_regdef_t *) USART6_BASE_ADDR)
+
+#define SYSCFG  ((syscfg_regdef_t *) SYSCFG_BASE_ADDR)
+#define EXTI    ((exti_regdef_t   *) EXTI_BASE_ADDR)
+#define RCC     ((rcc_regdef_t *) RCC_BASE_ADDR)
 
 /* Clock enable macros for GPIOx */
 #define GPIOA_CLK_ENABLE()  (RCC->AHB1ENR |= (1 << 0))
@@ -162,5 +187,11 @@ typedef struct
 #define UART4_CLK_DISABLE()   (RCC->APB1ENR &= ~(1 << 19))
 #define UART5_CLK_DISABLE()   (RCC->APB1ENR &= ~(1 << 20))
 #define USART6_CLK_DISABLE()  (RCC->APB2ENR &= ~(1 << 5))
+
+/* Clock enable macros for SYSCFG */
+#define SYSCFG_CLK_ENABLE()  (RCC->APB2ENR |= (1 << 14))
+
+/* Clock disable macros for SYSCFG */
+#define SYSCFG_CLK_DISABLE() (RCC->APB2ENR &= ~(1 << 14))
 
 #endif
