@@ -2,6 +2,7 @@
 #define _STM32F446XX_GPIO_H_
 
 #include "stm32f446xx.h"
+#include "stm32f4xx_nvic.h"
 
 /* GPIO pin configuration structure */
 typedef struct
@@ -23,11 +24,17 @@ typedef struct
 
 /* General-purpose I/O driver public API */
 void gpio_init(gpio_handle_t *gpio_handle);
+
 uint8_t gpio_read_pin(gpio_regdef_t *gpiox, uint8_t pin_number);
 uint16_t gpio_read_port(gpio_regdef_t *gpiox);
 void gpio_write_pin(gpio_regdef_t *gpiox, uint8_t pin_number, uint8_t value);
 void gpio_write_port(gpio_regdef_t *gpiox, uint16_t value);
 void gpio_toggle_pin(gpio_regdef_t *gpiox, uint8_t pin_number);
+
+void gpio_irq_enable(irq_nr number);
+void gpio_irq_disable(irq_nr number);
+void gpio_irq_priority(irq_nr number, irq_priority priority);
+void gpio_irq_handler(uint8_t pin_number);
 
 /* General GPIO macros */
 #define GPIO_PIN_LOW    0
@@ -56,6 +63,9 @@ void gpio_toggle_pin(gpio_regdef_t *gpiox, uint8_t pin_number);
 #define GPIO_MODE_OUTPUT    1
 #define GPIO_MODE_ALT_FUNC  2
 #define GPIO_MODE_ANALOG    3
+#define GPIO_MODE_IT_RE     4
+#define GPIO_MODE_IT_FE     5
+#define GPIO_MODE_IT_RFE    6
 
 /* @pin_output_type configuration */
 #define GPIO_OUTPUT_PUSH_PULL   0
@@ -89,5 +99,14 @@ void gpio_toggle_pin(gpio_regdef_t *gpiox, uint8_t pin_number);
 #define GPIO_ALT_FUNC_13    13
 #define GPIO_ALT_FUNC_14    14
 #define GPIO_ALT_FUNC_15    15
+
+#define GPIO_CODE(x)    (x == GPIOA ? 0 :\
+                         x == GPIOB ? 1 :\
+                         x == GPIOC ? 2 :\
+                         x == GPIOD ? 3 :\
+                         x == GPIOE ? 4 :\
+                         x == GPIOF ? 5 :\
+                         x == GPIOG ? 6 :\
+                         x == GPIOH ? 7 : 0)
 
 #endif

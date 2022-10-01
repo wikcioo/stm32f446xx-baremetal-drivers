@@ -9,9 +9,39 @@ void gpio_init(gpio_handle_t *gpio_handle)
     uint32_t temp_reg = 0;
 
     /* Configure GPIO pin mode */
-    temp_reg = gpio_handle->config.pin_mode << (2 * gpio_handle->config.pin_number);
-    gpio_handle->gpiox->MODER &= ~(0x3 << (2 * gpio_handle->config.pin_number));
-    gpio_handle->gpiox->MODER |= temp_reg;
+    if (gpio_handle->config.pin_mode <= GPIO_MODE_ANALOG)
+    {
+        temp_reg = gpio_handle->config.pin_mode << (2 * gpio_handle->config.pin_number);
+        gpio_handle->gpiox->MODER &= ~(0x3 << (2 * gpio_handle->config.pin_number));
+        gpio_handle->gpiox->MODER |= temp_reg;
+    }
+    else
+    {
+        /* Interrupt mode */
+        if (gpio_handle->config.pin_mode == GPIO_MODE_IT_RE)
+        {
+            EXTI->RTSR |=  (1 << gpio_handle->config.pin_number);
+            EXTI->FTSR &= ~(1 << gpio_handle->config.pin_number);
+        }
+        else if (gpio_handle->config.pin_mode == GPIO_MODE_IT_FE)
+        {
+            EXTI->RTSR &= ~(1 << gpio_handle->config.pin_number);
+            EXTI->FTSR |=  (1 << gpio_handle->config.pin_number);
+        }
+        else if (gpio_handle->config.pin_mode == GPIO_MODE_IT_RFE)
+        {
+            EXTI->RTSR |= (1 << gpio_handle->config.pin_number);
+            EXTI->FTSR |= (1 << gpio_handle->config.pin_number);
+        }
+
+        EXTI->IMR |= (1 << gpio_handle->config.pin_number);
+
+        SYSCFG_CLK_ENABLE();
+        uint8_t index  = gpio_handle->config.pin_number / 4;
+        uint8_t offset = gpio_handle->config.pin_number % 4;
+        SYSCFG->EXTICR[index] &= ~(0xF << (4 * offset));
+        SYSCFG->EXTICR[index] |= GPIO_CODE(gpio_handle->gpiox) << (4 * offset);
+    }
 
     /* Configure GPIO pin output type */
     temp_reg = gpio_handle->config.pin_output_type << gpio_handle->config.pin_number;
@@ -67,6 +97,27 @@ void gpio_write_port(gpio_regdef_t *gpiox, uint16_t value)
 void gpio_toggle_pin(gpio_regdef_t *gpiox, uint8_t pin_number)
 {
     gpiox->ODR ^= 1 << pin_number;
+}
+
+void gpio_irq_enable(irq_nr number)
+{
+    nvic_enable_irq(number);
+}
+
+void gpio_irq_disable(irq_nr number)
+{
+    nvic_disable_irq(number);
+}
+
+void gpio_irq_priority(irq_nr number, irq_priority priority)
+{
+    nvic_set_priority(number, priority);
+}
+
+void gpio_irq_handler(uint8_t pin_number)
+{
+    if (EXTI->PR & (1 << pin_number))
+        EXTI->PR |= 1 << pin_number;
 }
 
 static void gpio_clock_control(gpio_regdef_t *gpiox, uint8_t state)
