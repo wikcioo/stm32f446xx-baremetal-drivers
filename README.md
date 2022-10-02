@@ -1,9 +1,9 @@
 # stm32f446xx drivers and firmware examples
 
 ## Core drivers: found in drivers/core/
-- [x] gpio (TODO: interrupt mode)
+- [x] gpio with interrupt support
 - [x] uart (TODO: interrupt mode)
-- [ ] rcc
+- [x] rcc
 - [ ] i2c
 - [ ] spi
 - [ ] timer
