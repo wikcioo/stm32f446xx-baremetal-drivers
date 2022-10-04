@@ -36,6 +36,8 @@
 #define RCC_BASE_ADDR           (AHB1PERIPH_BASE_ADDR + 0x3800U)
 
 /* Base addresses of peripherals hanging on APB1 bus */
+#define SPI2_BASE_ADDR          (APB1PERIPH_BASE_ADDR + 0x3800U)
+#define SPI3_BASE_ADDR          (APB1PERIPH_BASE_ADDR + 0x3C00U)
 #define USART2_BASE_ADDR        (APB1PERIPH_BASE_ADDR + 0x4400U)
 #define USART3_BASE_ADDR        (APB1PERIPH_BASE_ADDR + 0x4800U)
 #define UART4_BASE_ADDR         (APB1PERIPH_BASE_ADDR + 0x4C00U)
@@ -44,6 +46,8 @@
 /* Base addresses of peripherals hanging on APB2 bus */
 #define USART1_BASE_ADDR        (APB2PERIPH_BASE_ADDR + 0x1000U)
 #define USART6_BASE_ADDR        (APB2PERIPH_BASE_ADDR + 0x1400U)
+#define SPI1_BASE_ADDR          (APB2PERIPH_BASE_ADDR + 0x3000U)
+#define SPI4_BASE_ADDR          (APB2PERIPH_BASE_ADDR + 0x3400U)
 #define SYSCFG_BASE_ADDR        (APB2PERIPH_BASE_ADDR + 0x3800U)
 #define EXTI_BASE_ADDR          (APB2PERIPH_BASE_ADDR + 0x3C00U)
 
@@ -112,6 +116,19 @@ typedef struct
 
 typedef struct
 {
+	__IO uint32_t CR1;
+	__IO uint32_t CR2;
+	__IO uint32_t SR;
+	__IO uint32_t DR;
+	__IO uint32_t CRCPR;
+	__IO uint32_t RXCRCR;
+	__IO uint32_t TXCRCR;
+	__IO uint32_t I2SCFGR;
+	__IO uint32_t I2SPR;
+} spi_regdef_t;
+
+typedef struct
+{
 	__IO uint32_t MEMRMP;
 	__IO uint32_t PMC;
 	__IO uint32_t EXTICR[4];
@@ -148,8 +165,13 @@ typedef struct
 #define UART5   ((usart_regdef_t *) UART5_BASE_ADDR)
 #define USART6  ((usart_regdef_t *) USART6_BASE_ADDR)
 
+#define SPI1    ((spi_regdef_t *) SPI1_BASE_ADDR)
+#define SPI2    ((spi_regdef_t *) SPI2_BASE_ADDR)
+#define SPI3    ((spi_regdef_t *) SPI3_BASE_ADDR)
+#define SPI4    ((spi_regdef_t *) SPI4_BASE_ADDR)
+
 #define SYSCFG  ((syscfg_regdef_t *) SYSCFG_BASE_ADDR)
-#define EXTI    ((exti_regdef_t   *) EXTI_BASE_ADDR)
+#define EXTI    ((exti_regdef_t *) EXTI_BASE_ADDR)
 #define RCC     ((rcc_regdef_t *) RCC_BASE_ADDR)
 
 /* Clock enable macros for GPIOx */
@@ -187,6 +209,18 @@ typedef struct
 #define UART4_CLK_DISABLE()   (RCC->APB1ENR &= ~(1 << 19))
 #define UART5_CLK_DISABLE()   (RCC->APB1ENR &= ~(1 << 20))
 #define USART6_CLK_DISABLE()  (RCC->APB2ENR &= ~(1 << 5))
+
+/* Clock enable macros for SPIx */
+#define SPI1_CLK_ENABLE()   (RCC->APB2ENR |= (1 << 12))
+#define SPI2_CLK_ENABLE()   (RCC->APB1ENR |= (1 << 14))
+#define SPI3_CLK_ENABLE()   (RCC->APB1ENR |= (1 << 15))
+#define SPI4_CLK_ENABLE()   (RCC->APB2ENR |= (1 << 13))
+
+/* Clock disable macros for SPIx */
+#define SPI1_CLK_DISABLE()  (RCC->APB2ENR &= ~(1 << 12))
+#define SPI2_CLK_DISABLE()  (RCC->APB1ENR &= ~(1 << 14))
+#define SPI3_CLK_DISABLE()  (RCC->APB1ENR &= ~(1 << 15))
+#define SPI4_CLK_DISABLE()  (RCC->APB2ENR &= ~(1 << 13))
 
 /* Clock enable macros for SYSCFG */
 #define SYSCFG_CLK_ENABLE()  (RCC->APB2ENR |= (1 << 14))
