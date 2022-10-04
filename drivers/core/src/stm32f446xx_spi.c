@@ -3,6 +3,7 @@
 static uint8_t spi_get_flag_status(spi_regdef_t *spix, uint8_t flag);
 static void spi_peripheral_control(spi_regdef_t *spix, uint8_t state);
 static void spi_clock_control(spi_regdef_t *spix, uint8_t state);
+static void spi_ssoe_control(spi_regdef_t *spix, uint8_t state);
 static void spi_ssi_control(spi_regdef_t *spix, uint8_t state);
 
 void spi_init(spi_handle_t *spi_handle)
@@ -30,6 +31,8 @@ void spi_init(spi_handle_t *spi_handle)
 
     if (spi_handle->config.ssm == SPI_SSM_ENABLE)
         spi_ssi_control(spi_handle->spix, ENABLE);
+    else
+        spi_ssoe_control(spi_handle->spix, ENABLE);
 }
 
 void spi_transmit(spi_handle_t *spi_handle, uint8_t *tx_buffer, uint32_t length)
@@ -54,6 +57,20 @@ void spi_transmit(spi_handle_t *spi_handle, uint8_t *tx_buffer, uint32_t length)
 
 void spi_receive(spi_handle_t *spi_handle, uint8_t *rx_buffer, uint32_t length)
 {
+    spi_peripheral_control(spi_handle->spix, ENABLE);
+
+    while (length--)
+    {
+        if (spi_handle->config.dff == SPI_DFF_8BITS)
+        {
+            *rx_buffer++ = spi_handle->spix->DR & 0xFF;
+        }
+        else
+        {
+            *(uint16_t *)rx_buffer++ = spi_handle->spix->DR;
+            length--; /* Because we just sent 2 bytes of data */
+        }
+    }
 }
 
 static uint8_t spi_get_flag_status(spi_regdef_t *spix, uint8_t flag)
@@ -86,6 +103,14 @@ static void spi_clock_control(spi_regdef_t *spix, uint8_t state)
         else if (spix == SPI4) SPI4_CLK_DISABLE();
     }
 
+}
+
+static void spi_ssoe_control(spi_regdef_t *spix, uint8_t state)
+{
+    if (state == ENABLE)
+        spix->CR2 |= 1 << SPI_CR2_SSOE;
+    else
+        spix->CR2 &= ~(1 << SPI_CR2_SSOE);
 }
 
 static void spi_ssi_control(spi_regdef_t *spix, uint8_t state)
