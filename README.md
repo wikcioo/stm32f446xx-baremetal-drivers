@@ -3,12 +3,13 @@
 ## Core drivers: found in drivers/core/
 - [x] gpio with interrupt support
 - [x] uart (TODO: interrupt mode)
+- [x] spi
 - [x] rcc
+- [x] nvic
+- [x] systick
 - [ ] i2c
-- [ ] spi
 - [ ] timer
 - [ ] pwm
-- [ ] can
 
 ## Device drivers: found in drivers/bsp/
 - [ ] adxl345 accelometer
