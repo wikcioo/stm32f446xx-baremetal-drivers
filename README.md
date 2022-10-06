@@ -3,7 +3,7 @@
 ## Core drivers: found in drivers/core/
 - [x] gpio with interrupt support
 - [x] uart (TODO: interrupt mode)
-- [x] spi
+- [x] spi with interrupt support
 - [x] rcc
 - [x] nvic
 - [x] systick

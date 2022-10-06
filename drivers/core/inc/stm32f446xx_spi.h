@@ -2,6 +2,7 @@
 #define _STM32F446XX_SPI_H_
 
 #include "stm32f446xx.h"
+#include "stm32f4xx_nvic.h"
 
 /* SPI configuration structure */
 typedef struct
@@ -20,13 +21,37 @@ typedef struct
 typedef struct
 {
     spi_regdef_t *spix;
-    spi_config_t config;
+    spi_config_t  config;
+    uint8_t      *tx_buffer;
+    uint8_t      *rx_buffer;
+    uint32_t      tx_length;
+    uint32_t      rx_length;
+    uint8_t       tx_state;
+    uint8_t       rx_state;
 } spi_handle_t;
 
 /* Serial peripheral interface driver public API */
-void spi_init     (spi_handle_t *spi_handle);
-void spi_transmit (spi_handle_t *spi_handle, uint8_t *tx_buffer, uint32_t length);
-void spi_receive  (spi_handle_t *spi_handle, uint8_t *rx_buffer, uint32_t length);
+void    spi_init         (spi_handle_t *spi_handle);
+
+void    spi_transmit     (spi_handle_t *spi_handle, uint8_t *tx_buffer, uint32_t length);
+void    spi_receive      (spi_handle_t *spi_handle, uint8_t *rx_buffer, uint32_t length);
+uint8_t spi_transmit_it  (spi_handle_t *spi_handle, uint8_t *tx_buffer, uint32_t length);
+uint8_t spi_receive_it   (spi_handle_t *spi_handle, uint8_t *rx_buffer, uint32_t length);
+
+void    spi_irq_enable   (irq_nr number);
+void    spi_irq_disable  (irq_nr number);
+void    spi_irq_priority (irq_nr number, irq_priority priority);
+void    spi_irq_handler  (spi_handle_t *spi_handle);
+
+/* SPI peripheral states */
+#define SPI_STATE_READY      0
+#define SPI_STATE_BUSY_IN_TX 1
+#define SPI_STATE_BUSY_IN_RX 2
+
+/* SPI interrupt events */
+#define SPI_EVENT_TX_COMPLETE   0
+#define SPI_EVENT_RX_COMPLETE   1
+#define SPI_EVENT_OVERRUN_ERROR 2
 
 /* @mode configuration */
 #define SPI_MODE_SLAVE  0
