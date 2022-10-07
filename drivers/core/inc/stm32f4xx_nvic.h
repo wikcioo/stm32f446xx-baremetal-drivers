@@ -20,7 +20,11 @@ typedef enum
     IRQ_NR_EXTI3     = 9,
     IRQ_NR_EXTI4     = 10,
     IRQ_NR_EXTI9_5   = 23,
+    IRQ_NR_SPI1      = 35,
+    IRQ_NR_SPI2      = 36,
     IRQ_NR_EXTI15_10 = 40,
+    IRQ_NR_SPI3      = 51,
+    IRQ_NR_SPI4      = 84
 } irq_nr;
 
 typedef enum
@@ -40,7 +44,7 @@ typedef enum
     IRQ_PRI_12 = 12,
     IRQ_PRI_13 = 13,
     IRQ_PRI_14 = 14,
-    IRQ_PRI_15 = 15,
+    IRQ_PRI_15 = 15
 } irq_priority;
 
 void nvic_enable_irq(irq_nr number);
