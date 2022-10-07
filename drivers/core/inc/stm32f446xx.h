@@ -42,6 +42,9 @@
 #define USART3_BASE_ADDR        (APB1PERIPH_BASE_ADDR + 0x4800U)
 #define UART4_BASE_ADDR         (APB1PERIPH_BASE_ADDR + 0x4C00U)
 #define UART5_BASE_ADDR         (APB1PERIPH_BASE_ADDR + 0x5000U)
+#define I2C1_BASE_ADDR          (APB1PERIPH_BASE_ADDR + 0x5400U)
+#define I2C2_BASE_ADDR          (APB1PERIPH_BASE_ADDR + 0x5800U)
+#define I2C3_BASE_ADDR          (APB1PERIPH_BASE_ADDR + 0x5C00U)
 
 /* Base addresses of peripherals hanging on APB2 bus */
 #define USART1_BASE_ADDR        (APB2PERIPH_BASE_ADDR + 0x1000U)
@@ -129,6 +132,20 @@ typedef struct
 
 typedef struct
 {
+	__IO uint32_t CR1;
+	__IO uint32_t CR2;
+	__IO uint32_t OAR1;
+	__IO uint32_t OAR2;
+	__IO uint32_t DR;
+	__IO uint32_t SR1;
+	__IO uint32_t SR2;
+	__IO uint32_t CCR;
+	__IO uint32_t TRISE;
+	__IO uint32_t FLTR;
+} i2c_regdef_t;
+
+typedef struct
+{
 	__IO uint32_t MEMRMP;
 	__IO uint32_t PMC;
 	__IO uint32_t EXTICR[4];
@@ -169,6 +186,10 @@ typedef struct
 #define SPI2    ((spi_regdef_t *) SPI2_BASE_ADDR)
 #define SPI3    ((spi_regdef_t *) SPI3_BASE_ADDR)
 #define SPI4    ((spi_regdef_t *) SPI4_BASE_ADDR)
+
+#define I2C1    ((i2c_regdef_t *) I2C1_BASE_ADDR)
+#define I2C2    ((i2c_regdef_t *) I2C2_BASE_ADDR)
+#define I2C3    ((i2c_regdef_t *) I2C3_BASE_ADDR)
 
 #define SYSCFG  ((syscfg_regdef_t *) SYSCFG_BASE_ADDR)
 #define EXTI    ((exti_regdef_t *) EXTI_BASE_ADDR)
@@ -221,6 +242,16 @@ typedef struct
 #define SPI2_CLK_DISABLE()  (RCC->APB1ENR &= ~(1 << 14))
 #define SPI3_CLK_DISABLE()  (RCC->APB1ENR &= ~(1 << 15))
 #define SPI4_CLK_DISABLE()  (RCC->APB2ENR &= ~(1 << 13))
+
+/* Clock enable macros for I2Cx */
+#define I2C1_CLK_ENABLE()   (RCC->APB1ENR |= (1 << 21))
+#define I2C2_CLK_ENABLE()   (RCC->APB1ENR |= (1 << 22))
+#define I2C3_CLK_ENABLE()   (RCC->APB1ENR |= (1 << 23))
+
+/* Clock disable macros for I2Cx */
+#define I2C1_CLK_DISABLE()   (RCC->APB1ENR &= ~(1 << 21))
+#define I2C2_CLK_DISABLE()   (RCC->APB1ENR &= ~(1 << 22))
+#define I2C3_CLK_DISABLE()   (RCC->APB1ENR &= ~(1 << 23))
 
 /* Clock enable macros for SYSCFG */
 #define SYSCFG_CLK_ENABLE()  (RCC->APB2ENR |= (1 << 14))
