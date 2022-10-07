@@ -31,17 +31,25 @@ typedef struct
 } spi_handle_t;
 
 /* Serial peripheral interface driver public API */
-void    spi_init         (spi_handle_t *spi_handle);
+void    spi_init               (spi_handle_t *spi_handle);
 
-void    spi_transmit     (spi_handle_t *spi_handle, uint8_t *tx_buffer, uint32_t length);
-void    spi_receive      (spi_handle_t *spi_handle, uint8_t *rx_buffer, uint32_t length);
-uint8_t spi_transmit_it  (spi_handle_t *spi_handle, uint8_t *tx_buffer, uint32_t length);
-uint8_t spi_receive_it   (spi_handle_t *spi_handle, uint8_t *rx_buffer, uint32_t length);
+void    spi_transmit           (spi_handle_t *spi_handle, uint8_t *tx_buffer, uint32_t length);
+void    spi_receive            (spi_handle_t *spi_handle, uint8_t *rx_buffer, uint32_t length);
+uint8_t spi_transmit_it        (spi_handle_t *spi_handle, uint8_t *tx_buffer, uint32_t length);
+uint8_t spi_receive_it         (spi_handle_t *spi_handle, uint8_t *rx_buffer, uint32_t length);
 
-void    spi_irq_enable   (irq_nr number);
-void    spi_irq_disable  (irq_nr number);
-void    spi_irq_priority (irq_nr number, irq_priority priority);
-void    spi_irq_handler  (spi_handle_t *spi_handle);
+void    spi_irq_enable         (irq_nr number);
+void    spi_irq_disable        (irq_nr number);
+void    spi_irq_priority       (irq_nr number, irq_priority priority);
+void    spi_irq_handler        (spi_handle_t *spi_handle);
+
+uint8_t spi_get_flag_status    (spi_regdef_t *spix, uint8_t flag);
+void    spi_peripheral_control (spi_regdef_t *spix, uint8_t state);
+void    spi_clock_control      (spi_regdef_t *spix, uint8_t state);
+void    spi_ssoe_control       (spi_regdef_t *spix, uint8_t state);
+void    spi_ssi_control        (spi_regdef_t *spix, uint8_t state);
+
+void    spi_interrupt_event_callback (spi_handle_t *spi_handle, uint8_t event);
 
 /* SPI peripheral states */
 #define SPI_STATE_READY      0

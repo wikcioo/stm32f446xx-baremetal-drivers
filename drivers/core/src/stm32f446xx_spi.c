@@ -1,11 +1,5 @@
 #include "stm32f446xx_spi.h"
 
-static uint8_t spi_get_flag_status(spi_regdef_t *spix, uint8_t flag);
-static void spi_peripheral_control(spi_regdef_t *spix, uint8_t state);
-static void spi_clock_control(spi_regdef_t *spix, uint8_t state);
-static void spi_ssoe_control(spi_regdef_t *spix, uint8_t state);
-static void spi_ssi_control(spi_regdef_t *spix, uint8_t state);
-
 void spi_init(spi_handle_t *spi_handle)
 {
     spi_clock_control(spi_handle->spix, ENABLE);
@@ -124,11 +118,6 @@ void spi_irq_priority(irq_nr number, irq_priority priority)
     nvic_set_priority(number, priority);
 }
 
-__attribute__((weak)) void spi_interrupt_event_callback(spi_handle_t *spi_handle, uint8_t event)
-{
-    /* Needs to be overriden if application wants to handle interrupt events. */
-}
-
 void spi_irq_handler(spi_handle_t *spi_handle)
 {
     uint8_t is_flag_set;
@@ -212,12 +201,12 @@ void spi_irq_handler(spi_handle_t *spi_handle)
     }
 }
 
-static uint8_t spi_get_flag_status(spi_regdef_t *spix, uint8_t flag)
+uint8_t spi_get_flag_status(spi_regdef_t *spix, uint8_t flag)
 {
     return (spix->SR & flag) ? SET : RESET;
 }
 
-static void spi_peripheral_control(spi_regdef_t *spix, uint8_t state)
+void spi_peripheral_control(spi_regdef_t *spix, uint8_t state)
 {
     if (state == ENABLE)
         spix->CR1 |= 1 << SPI_CR1_SPE;
@@ -225,7 +214,7 @@ static void spi_peripheral_control(spi_regdef_t *spix, uint8_t state)
         spix->CR1 &= ~(1 << SPI_CR1_SPE);
 }
 
-static void spi_clock_control(spi_regdef_t *spix, uint8_t state)
+void spi_clock_control(spi_regdef_t *spix, uint8_t state)
 {
     if (state == ENABLE)
     {
@@ -244,7 +233,7 @@ static void spi_clock_control(spi_regdef_t *spix, uint8_t state)
 
 }
 
-static void spi_ssoe_control(spi_regdef_t *spix, uint8_t state)
+void spi_ssoe_control(spi_regdef_t *spix, uint8_t state)
 {
     if (state == ENABLE)
         spix->CR2 |= 1 << SPI_CR2_SSOE;
@@ -252,10 +241,15 @@ static void spi_ssoe_control(spi_regdef_t *spix, uint8_t state)
         spix->CR2 &= ~(1 << SPI_CR2_SSOE);
 }
 
-static void spi_ssi_control(spi_regdef_t *spix, uint8_t state)
+void spi_ssi_control(spi_regdef_t *spix, uint8_t state)
 {
     if (state == ENABLE)
         spix->CR1 |= 1 << SPI_CR1_SSI;
     else
         spix->CR1 &= ~(1 << SPI_CR1_SSI);
+}
+
+__attribute__((weak)) void spi_interrupt_event_callback(spi_handle_t *spi_handle, uint8_t event)
+{
+    /* Needs to be overriden if application wants to handle interrupt events. */
 }
