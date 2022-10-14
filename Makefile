@@ -1,6 +1,6 @@
 CC = arm-none-eabi-gcc
 MACH = cortex-m4
-CORE_DRIVERS_DIR = drivers/core
+CORE_DRIVERS_DIR = drivers
 BUILD_DIR = build
 SOURCES  = $(wildcard $(CORE_DRIVERS_DIR)/src/*.c)
 SOURCES += $(wildcard ./*.c)
