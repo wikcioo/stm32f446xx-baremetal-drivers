@@ -1,6 +1,6 @@
-# stm32f446xx drivers and firmware examples
+# STM32F446XX baremetal drivers
 
-## Core drivers: found in drivers/core/
+## Currently supports:
 - [x] gpio with interrupt support
 - [x] uart (TODO: interrupt mode)
 - [x] spi with interrupt support
@@ -10,17 +10,6 @@
 - [ ] i2c
 - [ ] timer
 - [ ] pwm
-
-## Device drivers: found in drivers/bsp/
-- [ ] adxl345 accelometer
-- [ ] mpu6050 accelometer and gyroscope
-- [ ] nrf24l01 radio transmitter and receiver
-- [ ] ds1307 read time clock
-- [ ] ssd1306 OLED display
-- [ ] hc-06 Bluetooth module
-- [ ] bmp280 barometer and pressure sensor
-
-## Firmware: found in examples/
 
 ## How to build and flash?
 **Note: this project has only been tested on Linux**
