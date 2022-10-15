@@ -268,4 +268,10 @@ typedef struct
 /* Clock disable macros for SYSCFG */
 #define SYSCFG_CLK_DISABLE() (RCC->APB2ENR &= ~(1 << 14))
 
+/* Clock enable macro for CRC */
+#define CRC_CLK_ENABLE() (RCC->AHB1ENR |= (1 << 12))
+
+/* Clock disable macro for CRC */
+#define CRC_CLK_DISABLE() (RCC->AHB1ENR &= ~(1 << 12))
+
 #endif
