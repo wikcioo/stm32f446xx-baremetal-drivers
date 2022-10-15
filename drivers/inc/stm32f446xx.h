@@ -33,6 +33,7 @@
 #define GPIOF_BASE_ADDR         (AHB1PERIPH_BASE_ADDR + 0x1400U)
 #define GPIOG_BASE_ADDR         (AHB1PERIPH_BASE_ADDR + 0x1800U)
 #define GPIOH_BASE_ADDR         (AHB1PERIPH_BASE_ADDR + 0x1C00U)
+#define CRC_BASE_ADDR           (AHB1PERIPH_BASE_ADDR + 0x3000U)
 #define RCC_BASE_ADDR           (AHB1PERIPH_BASE_ADDR + 0x3800U)
 
 /* Base addresses of peripherals hanging on APB1 bus */
@@ -92,6 +93,13 @@ typedef struct
 	__IO uint32_t CKGATENR;
 	__IO uint32_t DCKCFGR2;
 } rcc_regdef_t;
+
+typedef struct
+{
+    __IO uint32_t DR;
+    __IO uint32_t IDR;
+    __IO uint32_t CR;
+} crc_regdef_t;
 
 typedef struct
 {
@@ -194,6 +202,7 @@ typedef struct
 #define SYSCFG  ((syscfg_regdef_t *) SYSCFG_BASE_ADDR)
 #define EXTI    ((exti_regdef_t *) EXTI_BASE_ADDR)
 #define RCC     ((rcc_regdef_t *) RCC_BASE_ADDR)
+#define CRC     ((crc_regdef_t *) CRC_BASE_ADDR)
 
 /* Clock enable macros for GPIOx */
 #define GPIOA_CLK_ENABLE()  (RCC->AHB1ENR |= (1 << 0))
