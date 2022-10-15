@@ -1,4 +1,4 @@
-# STM32F446XX baremetal drivers
+# STM32F446xx baremetal drivers
 
 ## Currently supports:
 - [x] gpio with interrupt support
@@ -7,6 +7,7 @@
 - [x] rcc
 - [x] nvic
 - [x] systick
+- [x] crc
 - [ ] i2c
 - [ ] timer
 - [ ] pwm
