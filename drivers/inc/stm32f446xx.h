@@ -24,6 +24,12 @@
 #define AHB2PERIPH_BASE_ADDR    0x50000000U
 #define AHB3PERIPH_BASE_ADDR    0x60000000U
 
+/* Base addresses of Cortex-M4 internal buses */
+#define PPB_BASE_ADDR           0xE0000000U
+
+/* Base addresses of peripherals hanging on PPB */
+#define DBGMCU_BASE_ADDR        (PPB_BASE_ADDR + 0x42000U)
+
 /* Base addresses of peripherals hanging on AHB1 bus */
 #define GPIOA_BASE_ADDR         (AHB1PERIPH_BASE_ADDR + 0x0000U)
 #define GPIOB_BASE_ADDR         (AHB1PERIPH_BASE_ADDR + 0x0400U)
@@ -173,6 +179,14 @@ typedef struct
 	__IO uint32_t PR;
 } exti_regdef_t;
 
+typedef struct
+{
+    __IO uint32_t IDCODE;
+    __IO uint32_t CR;
+    __IO uint32_t APB1_FZ;
+    __IO uint32_t APB2_FZ;
+} dbgmcu_regdef_t;
+
 /* Peripheral definitions (base addresses type-casted to xxx_regdef_t) */
 #define GPIOA   ((gpio_regdef_t *) GPIOA_BASE_ADDR)
 #define GPIOB   ((gpio_regdef_t *) GPIOB_BASE_ADDR)
@@ -203,6 +217,8 @@ typedef struct
 #define EXTI    ((exti_regdef_t *) EXTI_BASE_ADDR)
 #define RCC     ((rcc_regdef_t *) RCC_BASE_ADDR)
 #define CRC     ((crc_regdef_t *) CRC_BASE_ADDR)
+
+#define DBGMCU  ((dbgmcu_regdef_t *) DBGMCU_BASE_ADDR)
 
 /* Clock enable macros for GPIOx */
 #define GPIOA_CLK_ENABLE()  (RCC->AHB1ENR |= (1 << 0))
