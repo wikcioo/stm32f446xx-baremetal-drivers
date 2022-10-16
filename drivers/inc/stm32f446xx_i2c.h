@@ -23,8 +23,8 @@ typedef struct
 /* Inter-integrated circuit driver public API */
 void    i2c_init               (i2c_handle_t *i2c_handle);
 
-void    i2c_master_transmit    (i2c_handle_t *i2c_handle, uint8_t *tx_buffer, uint32_t length, uint8_t slave_addr);
-void    i2c_master_receive     (i2c_handle_t *i2c_handle, uint8_t *rx_buffer, uint32_t length, uint8_t slave_addr);
+void    i2c_master_transmit    (i2c_handle_t *i2c_handle, uint8_t *tx_buffer, uint32_t length, uint8_t slave_addr, uint8_t gen_stop);
+void    i2c_master_receive     (i2c_handle_t *i2c_handle, uint8_t *rx_buffer, uint32_t length, uint8_t slave_addr, uint8_t gen_stop);
 
 uint8_t i2c_get_flag_status    (i2c_regdef_t *i2cx, uint32_t flag);
 void    i2c_peripheral_control (i2c_regdef_t *i2cx, uint8_t state);
@@ -47,6 +47,9 @@ void    i2c_ack_control        (i2c_regdef_t *i2cx, uint8_t state);
 /* Other i2c macros */
 #define I2C_WRITE_DATA 0
 #define I2C_READ_DATA  1
+
+#define I2C_STOP_BIT_DISABLE 0
+#define I2C_STOP_BIT_ENABLE  1
 
 /* I2C register bit positions */
 #define I2C_CR1_PE			0
