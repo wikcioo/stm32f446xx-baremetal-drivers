@@ -106,6 +106,51 @@ void i2c_master_transmit(i2c_handle_t *i2c_handle, uint8_t *tx_buffer, uint32_t 
 
 void i2c_master_receive(i2c_handle_t *i2c_handle, uint8_t *rx_buffer, uint32_t length, uint8_t slave_addr, uint8_t gen_stop)
 {
+    i2c_peripheral_control(i2c_handle->i2cx, ENABLE);
+
+    i2c_generate_start(i2c_handle->i2cx);
+    /* Confirm that the start generation completed before continuing */
+    while (!i2c_get_flag_status(i2c_handle->i2cx, I2C_FLAG_SB));
+
+    i2c_generate_address(i2c_handle->i2cx, slave_addr, I2C_READ_DATA);
+    /* Confirm that address generation completed before continuing */
+    while (!i2c_get_flag_status(i2c_handle->i2cx, I2C_FLAG_ADDR));
+
+    if (length == 1)
+    {
+        i2c_ack_control(i2c_handle->i2cx, DISABLE);
+        i2c_clear_addr_flag(i2c_handle->i2cx);
+
+        /* Wait until receive buffer is not empty */
+        while (!i2c_get_flag_status(i2c_handle->i2cx, I2C_FLAG_RXNE));
+
+        if (gen_stop == I2C_STOP_BIT_ENABLE)
+            i2c_generate_stop(i2c_handle->i2cx);
+
+        *rx_buffer = i2c_handle->i2cx->DR;
+    }
+    else
+    {
+        i2c_clear_addr_flag(i2c_handle->i2cx);
+
+        for (uint32_t i = length; i > 0; i--)
+        {
+            if (length == 2)
+            {
+                i2c_ack_control(i2c_handle->i2cx, DISABLE);
+                if (gen_stop == I2C_STOP_BIT_ENABLE)
+                    i2c_generate_stop(i2c_handle->i2cx);
+            }
+
+            /* Wait until receive buffer is not empty */
+            while (!i2c_get_flag_status(i2c_handle->i2cx, I2C_FLAG_RXNE));
+
+            *rx_buffer++ = i2c_handle->i2cx->DR;
+        }
+    }
+
+    if (i2c_handle->config.ack_control == I2C_ACK_ENABLE)
+        i2c_ack_control(i2c_handle->i2cx, ENABLE);
 }
 
 uint8_t i2c_get_flag_status(i2c_regdef_t *i2cx, uint32_t flag)
