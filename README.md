@@ -4,11 +4,11 @@
 - [x] gpio with interrupt support
 - [x] uart (TODO: interrupt mode)
 - [x] spi with interrupt support
+- [x] i2c (TODO: interrupt mode)
 - [x] rcc
 - [x] nvic
 - [x] systick
 - [x] crc
-- [ ] i2c
 - [ ] timer
 - [ ] pwm
 
