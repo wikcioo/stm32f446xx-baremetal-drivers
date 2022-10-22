@@ -80,25 +80,25 @@ void i2c_master_transmit(i2c_handle_t *i2c_handle, uint8_t *tx_buffer, uint32_t 
 
     i2c_generate_start(i2c_handle->i2cx);
     /* Confirm that the start generation completed before continuing */
-    while (!i2c_get_flag_status(i2c_handle->i2cx, I2C_FLAG_SB));
+    while (!i2c_is_status_flag1_set(i2c_handle->i2cx, I2C_FLAG_SB));
 
     i2c_generate_address(i2c_handle->i2cx, slave_addr, I2C_WRITE_DATA);
     /* Confirm that address generation completed before continuing */
-    while (!i2c_get_flag_status(i2c_handle->i2cx, I2C_FLAG_ADDR));
+    while (!i2c_is_status_flag1_set(i2c_handle->i2cx, I2C_FLAG_ADDR));
 
     i2c_clear_addr_flag(i2c_handle->i2cx);
 
     while (length--)
     {
         /* Wait until data register is empty */
-        while (!i2c_get_flag_status(i2c_handle->i2cx, I2C_FLAG_TXE));
+        while (!i2c_is_status_flag1_set(i2c_handle->i2cx, I2C_FLAG_TXE));
         i2c_handle->i2cx->DR = *tx_buffer++;
     }
 
     /* Wait until data register is empty */
-    while (!i2c_get_flag_status(i2c_handle->i2cx, I2C_FLAG_TXE));
+    while (!i2c_is_status_flag1_set(i2c_handle->i2cx, I2C_FLAG_TXE));
     /* Wait until byte transfer is finished */
-    while (!i2c_get_flag_status(i2c_handle->i2cx, I2C_FLAG_BTF));
+    while (!i2c_is_status_flag1_set(i2c_handle->i2cx, I2C_FLAG_BTF));
 
     if (gen_stop == I2C_STOP_BIT_ENABLE)
         i2c_generate_stop(i2c_handle->i2cx);
@@ -110,11 +110,11 @@ void i2c_master_receive(i2c_handle_t *i2c_handle, uint8_t *rx_buffer, uint32_t l
 
     i2c_generate_start(i2c_handle->i2cx);
     /* Confirm that the start generation completed before continuing */
-    while (!i2c_get_flag_status(i2c_handle->i2cx, I2C_FLAG_SB));
+    while (!i2c_is_status_flag1_set(i2c_handle->i2cx, I2C_FLAG_SB));
 
     i2c_generate_address(i2c_handle->i2cx, slave_addr, I2C_READ_DATA);
     /* Confirm that address generation completed before continuing */
-    while (!i2c_get_flag_status(i2c_handle->i2cx, I2C_FLAG_ADDR));
+    while (!i2c_is_status_flag1_set(i2c_handle->i2cx, I2C_FLAG_ADDR));
 
     if (length == 1)
     {
@@ -122,7 +122,7 @@ void i2c_master_receive(i2c_handle_t *i2c_handle, uint8_t *rx_buffer, uint32_t l
         i2c_clear_addr_flag(i2c_handle->i2cx);
 
         /* Wait until receive buffer is not empty */
-        while (!i2c_get_flag_status(i2c_handle->i2cx, I2C_FLAG_RXNE));
+        while (!i2c_is_status_flag1_set(i2c_handle->i2cx, I2C_FLAG_RXNE));
 
         if (gen_stop == I2C_STOP_BIT_ENABLE)
             i2c_generate_stop(i2c_handle->i2cx);
@@ -143,7 +143,7 @@ void i2c_master_receive(i2c_handle_t *i2c_handle, uint8_t *rx_buffer, uint32_t l
             }
 
             /* Wait until receive buffer is not empty */
-            while (!i2c_get_flag_status(i2c_handle->i2cx, I2C_FLAG_RXNE));
+            while (!i2c_is_status_flag1_set(i2c_handle->i2cx, I2C_FLAG_RXNE));
 
             *rx_buffer++ = i2c_handle->i2cx->DR;
         }
@@ -154,8 +154,15 @@ void i2c_master_receive(i2c_handle_t *i2c_handle, uint8_t *rx_buffer, uint32_t l
 }
 
 uint8_t i2c_get_flag_status(i2c_regdef_t *i2cx, uint32_t flag)
+
+uint8_t i2c_is_status_flag1_set(i2c_regdef_t *i2cx, uint32_t flag)
 {
     return (i2cx->SR1 & flag) ? SET : RESET;
+}
+
+uint8_t i2c_is_status_flag2_set (i2c_regdef_t *i2cx, uint32_t flag)
+{
+    return (i2cx->SR2 & flag) ? SET : RESET;
 }
 
 void i2c_peripheral_control(i2c_regdef_t *i2cx, uint8_t state)
