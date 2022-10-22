@@ -153,7 +153,78 @@ void i2c_master_receive(i2c_handle_t *i2c_handle, uint8_t *rx_buffer, uint32_t l
         i2c_ack_control(i2c_handle->i2cx, ENABLE);
 }
 
-uint8_t i2c_get_flag_status(i2c_regdef_t *i2cx, uint32_t flag)
+uint8_t i2c_master_transmit_it(i2c_handle_t *i2c_handle, uint8_t *tx_buffer, uint32_t length, uint8_t slave_addr, uint8_t gen_stop)
+{
+    uint8_t state = i2c_handle->tx_rx_state;;
+
+    if (state != I2C_STATE_BUSY_IN_TX && state != I2C_STATE_BUSY_IN_RX)
+    {
+        /* Save data and update state */
+        i2c_handle->tx_buffer   = tx_buffer;
+        i2c_handle->tx_length   = length;
+        i2c_handle->tx_rx_state = I2C_STATE_BUSY_IN_TX;
+        i2c_handle->slave_addr  = slave_addr;
+        i2c_handle->gen_stop    = gen_stop;
+    }
+
+    /* Enable buffer, event and error interrupts */
+    i2c_handle->i2cx->CR2 |= (1 << I2C_CR2_ITBUFEN) | (1 << I2C_CR2_ITEVTEN) | (1 << I2C_CR2_ITERREN);
+
+    i2c_generate_start(i2c_handle->i2cx);
+
+    return state;
+}
+
+uint8_t i2c_master_receive_it(i2c_handle_t *i2c_handle, uint8_t *rx_buffer, uint32_t length, uint8_t slave_addr, uint8_t gen_stop)
+{
+    uint8_t state = i2c_handle->tx_rx_state;
+
+    if (state != I2C_STATE_BUSY_IN_TX && state != I2C_STATE_BUSY_IN_RX)
+    {
+        /* Save data and update state */
+        i2c_handle->rx_buffer   = rx_buffer;
+        i2c_handle->rx_length   = length;
+        i2c_handle->rx_size     = length;
+        i2c_handle->tx_rx_state = I2C_STATE_BUSY_IN_RX;
+        i2c_handle->slave_addr  = slave_addr;
+        i2c_handle->gen_stop    = gen_stop;
+    }
+
+    /* Enable buffer, event and error interrupts */
+    i2c_handle->i2cx->CR2 |= (1 << I2C_CR2_ITBUFEN) | (1 << I2C_CR2_ITEVTEN) | (1 << I2C_CR2_ITERREN);
+
+    i2c_generate_start(i2c_handle->i2cx);
+
+    return state;
+}
+
+void i2c_close_transmisstion(i2c_handle_t *i2c_handle)
+{
+    /* Disable buffer and event interrupts */
+    i2c_handle->i2cx->CR2 &= ~(1 << I2C_CR2_ITBUFEN);
+    i2c_handle->i2cx->CR2 &= ~(1 << I2C_CR2_ITEVTEN);
+
+    /* Reset tx elements in I2C handle */
+    i2c_handle->tx_buffer   = (void *)0;
+    i2c_handle->tx_length   = 0;
+    i2c_handle->tx_rx_state = I2C_STATE_READY;
+}
+
+void i2c_close_reception(i2c_handle_t *i2c_handle)
+{
+    /* Disable buffer and event interrupts */
+    i2c_handle->i2cx->CR2 &= ~(1 << I2C_CR2_ITBUFEN);
+    i2c_handle->i2cx->CR2 &= ~(1 << I2C_CR2_ITEVTEN);
+
+    /* Reset rx elements in I2C handle */
+    i2c_handle->rx_buffer   = (void *)0;
+    i2c_handle->rx_length   = 0;
+    i2c_handle->rx_size     = 0;
+    i2c_handle->tx_rx_state = I2C_STATE_READY;
+
+    if (i2c_handle->config.ack_control == I2C_ACK_ENABLE)
+        i2c_ack_control(i2c_handle->i2cx, ENABLE);
+}
 
 uint8_t i2c_is_status_flag1_set(i2c_regdef_t *i2cx, uint32_t flag)
 {
@@ -195,4 +266,9 @@ void i2c_ack_control(i2c_regdef_t *i2cx, uint8_t state)
         i2cx->CR1 |= 1 << I2C_CR1_ACK;
     else
         i2cx->CR1 &= ~(1 << I2C_CR1_ACK);
+}
+
+__attribute__((weak)) void i2c_application_callback(i2c_handle_t *i2c_handle, uint8_t event_or_error)
+{
+    /* Needs to be overriden if the application wants to handle interrupt events and errors */
 }
