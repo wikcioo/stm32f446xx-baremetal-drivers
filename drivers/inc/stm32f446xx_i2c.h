@@ -52,6 +52,25 @@ void    i2c_ack_control         (i2c_regdef_t *i2cx, uint8_t state);
 
 void    i2c_application_callback (i2c_handle_t *i2c_handle, uint8_t event_or_error);
 
+/* I2C peripheral states */
+#define I2C_STATE_READY      0
+#define I2C_STATE_BUSY_IN_TX 1
+#define I2C_STATE_BUSY_IN_RX 2
+
+/* I2C interrupt events */
+#define I2C_EVENT_TX_COMPLETE 0
+#define I2C_EVENT_RX_COMPLETE 1
+#define I2C_EVENT_STOP        2
+#define I2C_EVENT_DATA_REQ    3
+#define I2C_EVENT_DATA_RCV    4
+
+/* I2C interrupt errors */
+#define I2C_ERROR_BUS       0
+#define I2C_ERROR_ARB_LOSS  1
+#define I2C_ERROR_ACK_FAIL  2
+#define I2C_ERROR_OVR       3
+#define I2C_ERROR_TIMEOUT   4
+
 /* @ack_control configuration */
 #define I2C_ACK_DISABLE     0
 #define I2C_ACK_ENABLE      1
