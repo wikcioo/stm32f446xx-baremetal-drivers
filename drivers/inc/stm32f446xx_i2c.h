@@ -29,7 +29,6 @@ typedef struct
 } i2c_handle_t;
 
 /* Inter-integrated circuit driver public API */
-uint8_t i2c_get_flag_status    (i2c_regdef_t *i2cx, uint32_t flag);
 void    i2c_init                (i2c_handle_t *i2c_handle);
 
 void    i2c_master_transmit     (i2c_handle_t *i2c_handle, uint8_t *tx_buffer, uint32_t length, uint8_t slave_addr, uint8_t gen_stop);
@@ -46,6 +45,8 @@ void    i2c_irq_priority        (irq_nr number, irq_priority priority);
 void    i2c_irq_event_handler   (i2c_handle_t *i2c_handle);
 void    i2c_irq_error_handler   (i2c_handle_t *i2c_handle);
 
+uint8_t i2c_is_status_flag1_set (i2c_regdef_t *i2cx, uint32_t flag);
+uint8_t i2c_is_status_flag2_set (i2c_regdef_t *i2cx, uint32_t flag);
 void    i2c_peripheral_control  (i2c_regdef_t *i2cx, uint8_t state);
 void    i2c_clock_control       (i2c_regdef_t *i2cx, uint8_t state);
 void    i2c_ack_control         (i2c_regdef_t *i2cx, uint8_t state);
