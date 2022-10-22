@@ -241,6 +241,124 @@ void i2c_irq_priority(irq_nr number, irq_priority priority)
     nvic_set_priority(number, priority);
 }
 
+void i2c_irq_event_handler(i2c_handle_t *i2c_handle)
+{
+    uint8_t is_buffer_interrupt_set;
+    uint8_t is_event_interrupt_set;
+
+    is_buffer_interrupt_set = i2c_handle->i2cx->CR2 & (1 << I2C_CR2_ITBUFEN);
+    is_event_interrupt_set  = i2c_handle->i2cx->CR2 & (1 << I2C_CR2_ITEVTEN);
+
+    if (i2c_is_status_flag1_set(i2c_handle->i2cx, I2C_FLAG_SB) && is_event_interrupt_set)
+    {
+        /* Handle 'start bit' interrupt */
+        if (i2c_handle->tx_rx_state == I2C_STATE_BUSY_IN_TX)
+            i2c_generate_address(i2c_handle->i2cx, i2c_handle->slave_addr, I2C_WRITE_DATA);
+        else if (i2c_handle->tx_rx_state == I2C_STATE_BUSY_IN_RX)
+            i2c_generate_address(i2c_handle->i2cx, i2c_handle->slave_addr, I2C_READ_DATA);
+    }
+
+    if (i2c_is_status_flag1_set(i2c_handle->i2cx, I2C_FLAG_ADDR) && is_event_interrupt_set)
+    {
+        /* Handle 'address sent' interrupt */
+        i2c_clear_addr_flag(i2c_handle->i2cx);
+    }
+
+    if (i2c_is_status_flag1_set(i2c_handle->i2cx, I2C_FLAG_STOPF) && is_event_interrupt_set)
+    {
+        /* Handle 'stop received' interrupt */
+        /* Clear STOPF by reading SR1 (done above) and writing to CR1 */
+        i2c_handle->i2cx->CR1 |= 0x0;
+        i2c_application_callback(i2c_handle, I2C_EVENT_STOP);
+    }
+
+    if (i2c_is_status_flag1_set(i2c_handle->i2cx, I2C_FLAG_BTF) && is_event_interrupt_set)
+    {
+        /* Handle 'byte transfer finished' interrupt */
+        if (i2c_handle->tx_rx_state == I2C_STATE_BUSY_IN_TX)
+        {
+            if (i2c_is_status_flag1_set(i2c_handle->i2cx, I2C_FLAG_TXE) && i2c_handle->tx_length == 0)
+            {
+                if (i2c_handle->gen_stop == I2C_STOP_BIT_ENABLE)
+                    i2c_generate_stop(i2c_handle->i2cx);
+
+                i2c_close_transmisstion(i2c_handle);
+                i2c_application_callback(i2c_handle, I2C_EVENT_TX_COMPLETE);
+            }
+        }
+    }
+
+    if (i2c_is_status_flag1_set(i2c_handle->i2cx, I2C_FLAG_TXE) && is_buffer_interrupt_set && is_event_interrupt_set)
+    {
+        /* Handle 'transmit buffer empty' interrupt */
+        if (i2c_is_status_flag2_set(i2c_handle->i2cx, I2C_FLAG_MSL))
+        {
+            if (i2c_handle->tx_rx_state == I2C_STATE_BUSY_IN_TX)
+            {
+                /* Master if in transmitter mode */
+                if (i2c_handle->tx_length > 0)
+                {
+                    i2c_handle->i2cx->DR = *i2c_handle->tx_buffer++;
+                    i2c_handle->tx_length--;
+                }
+            }
+        }
+        else
+        {
+            if (i2c_is_status_flag2_set(i2c_handle->i2cx, I2C_FLAG_TRA))
+            {
+                /* Slave if in transmitter mode */
+                i2c_application_callback(i2c_handle, I2C_EVENT_DATA_REQ);
+            }
+        }
+    }
+
+    if (i2c_is_status_flag1_set(i2c_handle->i2cx, I2C_FLAG_RXNE) && is_buffer_interrupt_set && is_event_interrupt_set)
+    {
+        /* Handle 'receive buffer not empty' interrupt */
+        if (i2c_is_status_flag2_set(i2c_handle->i2cx, I2C_FLAG_MSL))
+        {
+            if (i2c_handle->tx_rx_state == I2C_STATE_BUSY_IN_RX)
+            {
+                /* Master if in receiver mode */
+                if (i2c_handle->rx_size == 1)
+                {
+                    *i2c_handle->rx_buffer = i2c_handle->i2cx->DR;
+                    i2c_handle->rx_length--;
+                }
+
+                if (i2c_handle->rx_size > 1)
+                {
+                    if (i2c_handle->rx_length == 2)
+                    {
+                        i2c_ack_control(i2c_handle->i2cx, DISABLE);
+                    }
+
+                    *i2c_handle->rx_buffer++ = i2c_handle->i2cx->DR;
+                    i2c_handle->rx_length--;
+                }
+
+                if (i2c_handle->rx_length == 0)
+                {
+                    if (i2c_handle->gen_stop == I2C_STOP_BIT_ENABLE)
+                        i2c_generate_stop(i2c_handle->i2cx);
+
+                    i2c_close_reception(i2c_handle);
+                    i2c_application_callback(i2c_handle, I2C_EVENT_RX_COMPLETE);
+                }
+            }
+        }
+        else
+        {
+            if (!i2c_is_status_flag2_set(i2c_handle->i2cx, I2C_FLAG_TRA))
+            {
+                /* Slave if in receiver mode */
+                i2c_application_callback(i2c_handle, I2C_EVENT_DATA_RCV);
+            }
+        }
+    }
+}
+
 void i2c_irq_error_handler(i2c_handle_t *i2c_handle)
 {
     uint8_t is_error_interrupt_set;
