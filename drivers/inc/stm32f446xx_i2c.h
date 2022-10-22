@@ -17,7 +17,15 @@ typedef struct
 typedef struct
 {
     i2c_regdef_t *i2cx;
-    i2c_config_t config;
+    i2c_config_t  config;
+    uint8_t      *tx_buffer;
+    uint8_t      *rx_buffer;
+    uint32_t      tx_length;
+    uint32_t      rx_length;
+    uint8_t       tx_rx_state;
+    uint8_t       slave_addr;
+    uint32_t      rx_size;
+    uint8_t       gen_stop;
 } i2c_handle_t;
 
 /* Inter-integrated circuit driver public API */
