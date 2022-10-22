@@ -240,6 +240,49 @@ void i2c_irq_priority(irq_nr number, irq_priority priority)
 {
     nvic_set_priority(number, priority);
 }
+
+void i2c_irq_error_handler(i2c_handle_t *i2c_handle)
+{
+    uint8_t is_error_interrupt_set;
+
+    is_error_interrupt_set = i2c_handle->i2cx->CR2 & (1 << I2C_CR2_ITERREN);
+
+    if (i2c_is_status_flag1_set(i2c_handle->i2cx, I2C_FLAG_BERR) && is_error_interrupt_set)
+    {
+        /* Handle 'bus error' interrupt */
+        i2c_handle->i2cx->SR1 &= ~(1 << I2C_SR1_BERR);
+        i2c_application_callback(i2c_handle, I2C_ERROR_BUS);
+    }
+
+    if (i2c_is_status_flag1_set(i2c_handle->i2cx, I2C_FLAG_ARLO) && is_error_interrupt_set)
+    {
+        /* Handle 'arbitration loss' interrupt */
+        i2c_handle->i2cx->SR1 &= ~(1 << I2C_SR1_ARLO);
+        i2c_application_callback(i2c_handle, I2C_ERROR_ARB_LOSS);
+    }
+
+    if (i2c_is_status_flag1_set(i2c_handle->i2cx, I2C_FLAG_AF) && is_error_interrupt_set)
+    {
+        /* Handle 'acknowledge failure' interrupt */
+        i2c_handle->i2cx->SR1 &= ~(1 << I2C_SR1_AF);
+        i2c_application_callback(i2c_handle, I2C_ERROR_ACK_FAIL);
+    }
+
+    if (i2c_is_status_flag1_set(i2c_handle->i2cx, I2C_FLAG_OVR) && is_error_interrupt_set)
+    {
+        /* Handle 'overrun/underrun' interrupt */
+        i2c_handle->i2cx->SR1 &= ~(1 << I2C_SR1_OVR);
+        i2c_application_callback(i2c_handle, I2C_ERROR_OVR);
+    }
+
+    if (i2c_is_status_flag1_set(i2c_handle->i2cx, I2C_FLAG_TIMEOUT) && is_error_interrupt_set)
+    {
+        /* Handle 'timeout' interrupt */
+        i2c_handle->i2cx->SR1 &= ~(1 << I2C_SR1_TIMEOUT);
+        i2c_application_callback(i2c_handle, I2C_ERROR_TIMEOUT);
+    }
+}
+
 uint8_t i2c_is_status_flag1_set(i2c_regdef_t *i2cx, uint32_t flag)
 {
     return (i2cx->SR1 & flag) ? SET : RESET;
