@@ -226,6 +226,20 @@ void i2c_close_reception(i2c_handle_t *i2c_handle)
         i2c_ack_control(i2c_handle->i2cx, ENABLE);
 }
 
+void i2c_irq_enable(irq_nr number)
+{
+    nvic_enable_irq(number);
+}
+
+void i2c_irq_disable(irq_nr number)
+{
+    nvic_disable_irq(number);
+}
+
+void i2c_irq_priority(irq_nr number, irq_priority priority)
+{
+    nvic_set_priority(number, priority);
+}
 uint8_t i2c_is_status_flag1_set(i2c_regdef_t *i2cx, uint32_t flag)
 {
     return (i2cx->SR1 & flag) ? SET : RESET;
