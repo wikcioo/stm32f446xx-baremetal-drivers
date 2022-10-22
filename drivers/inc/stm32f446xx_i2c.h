@@ -139,5 +139,12 @@ void    i2c_application_callback (i2c_handle_t *i2c_handle, uint8_t event_or_err
 #define I2C_FLAG_ADD10		(1 << I2C_SR1_ADD10)
 #define I2C_FLAG_BTF		(1 << I2C_SR1_BTF)
 #define I2C_FLAG_ADDR		(1 << I2C_SR1_ADDR)
+#define I2C_FLAG_TIMEOUT    (1 << I2C_SR1_TIMEOUT)
+
+#define I2C_FLAG_MSL        (1 << I2C_SR2_MSL)
+#define I2C_FLAG_TRA        (1 << I2C_SR2_TRA)
+#define I2C_FLAG_BUSY       (1 << I2C_SR2_BUSY)
+#define I2C_FLAG_DUALF      (1 << I2C_SR2_DUALF)
+#define I2C_FLAG_GENCALL    (1 << I2C_SR2_GENCALL)
 
 #endif
