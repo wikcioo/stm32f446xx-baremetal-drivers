@@ -20,10 +20,16 @@ typedef enum
     IRQ_NR_EXTI3     = 9,
     IRQ_NR_EXTI4     = 10,
     IRQ_NR_EXTI9_5   = 23,
+    IRQ_NR_I2C1_EV   = 31,
+    IRQ_NR_I2C1_ER   = 32,
+    IRQ_NR_I2C2_EV   = 33,
+    IRQ_NR_I2C2_ER   = 34,
     IRQ_NR_SPI1      = 35,
     IRQ_NR_SPI2      = 36,
     IRQ_NR_EXTI15_10 = 40,
     IRQ_NR_SPI3      = 51,
+    IRQ_NR_I2C3_EV   = 72,
+    IRQ_NR_I2C3_ER   = 73,
     IRQ_NR_SPI4      = 84
 } irq_nr;
 
