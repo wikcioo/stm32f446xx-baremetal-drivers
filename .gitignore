@@ -4,3 +4,7 @@ examples/**/*.o
 examples/**/*.elf
 examples/**/*.map
 examples/**/*.bin
+.cache/
+.metadata/
+compile_commands.json
+*.elf
