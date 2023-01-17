@@ -1,8 +1,5 @@
 #include "stm32f446xx_rcc.h"
 
-#define HSI_FREQ 16000000U
-#define HSE_FREQ 8000000U
-
 uint16_t ahb_prescaler[8]  = {2, 4, 8, 16, 64, 128, 256, 512};
 uint8_t  apbx_prescaler[4] = {2, 4, 8, 16};
 
@@ -11,7 +8,7 @@ uint32_t rcc_get_pll_clock_freq(void)
     uint16_t plln = (RCC->PLLCFGR >> 6) & 0x1FF;
     uint8_t pllp = (((RCC->PLLCFGR >> 16) & 0x3) + 1) * 2;
     uint8_t pllm = RCC->PLLCFGR & 0x3F;
-    uint32_t vco = HSE_FREQ * (plln / pllm);
+    uint32_t vco = HSE_DEFAULT_FREQ * (plln / pllm);
     uint32_t pll_clock_freq = vco / pllp;
 
     return pll_clock_freq;
@@ -23,9 +20,9 @@ uint32_t rcc_get_system_clock_freq(void)
     uint8_t clock_source = (RCC->CFGR >> 2) & 0x3;
 
     if (clock_source == 0)
-        system_clock_freq = HSI_FREQ;
+        system_clock_freq = HSI_DEFAULT_FREQ;
     else if (clock_source == 1)
-        system_clock_freq = HSE_FREQ;
+        system_clock_freq = HSE_DEFAULT_FREQ;
     else if (clock_source == 2)
         system_clock_freq = rcc_get_pll_clock_freq();
 
