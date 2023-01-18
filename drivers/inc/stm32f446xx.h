@@ -11,6 +11,9 @@
 #define SET         ENABLE
 #define RESET       DISABLE
 
+#define KILO        (1000U)
+#define MEGA        (1000000U)
+
 /* Base addresses of Flash, SRAM and ROM memories */
 #define FLASH_BASE_ADDR         0x08000000U
 #define SRAM1_BASE_ADDR         0x20000000U
