@@ -190,6 +190,16 @@ typedef struct
     __IO uint32_t APB2_FZ;
 } dbgmcu_regdef_t;
 
+typedef struct
+{
+    __IO uint32_t ACR;
+    __IO uint32_t KEYR;
+    __IO uint32_t OPTKEYR;
+    __IO uint32_t SR;
+    __IO uint32_t CR;
+    __IO uint32_t OPTCR;
+} flash_regdef_t;
+
 /* Peripheral definitions (base addresses type-casted to xxx_regdef_t) */
 #define GPIOA   ((gpio_regdef_t *) GPIOA_BASE_ADDR)
 #define GPIOB   ((gpio_regdef_t *) GPIOB_BASE_ADDR)
@@ -220,6 +230,7 @@ typedef struct
 #define EXTI    ((exti_regdef_t *) EXTI_BASE_ADDR)
 #define RCC     ((rcc_regdef_t *) RCC_BASE_ADDR)
 #define CRC     ((crc_regdef_t *) CRC_BASE_ADDR)
+#define FLASH   ((flash_regdef_t *) FLASH_BASE_ADDR)
 
 #define DBGMCU  ((dbgmcu_regdef_t *) DBGMCU_BASE_ADDR)
 
