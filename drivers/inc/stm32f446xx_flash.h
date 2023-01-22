@@ -28,6 +28,8 @@
 #define FLASH_SECTOR_7_BASE_ADDR (FLASH_SECTOR_6_BASE_ADDR + FLASH_SECTOR_6_SIZE_KB)
 #define FLASH_END_ADDR           (FLASH_SECTOR_7_BASE_ADDR + FLASH_SECTOR_7_SIZE_KB)
 
+void flash_init(void);
+
 /* Flash register bit positions */
 #define FLASH_ACR_LATENCY   0
 
