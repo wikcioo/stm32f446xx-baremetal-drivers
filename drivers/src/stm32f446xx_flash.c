@@ -19,3 +19,22 @@ void flash_init(void)
     // Set the last 4 bits to the ws_value
     FLASH->ACR |= (ws_value & 0xF) << FLASH_ACR_LATENCY;
 }
+
+uint8_t flash_read(uint32_t address, uint8_t *rx_buffer, uint32_t length)
+{
+    if (!(address >= FLASH_SECTOR_0_BASE_ADDR && address <= FLASH_END_ADDR) ||
+         (length > FLASH_END_ADDR - address))
+    {
+        return FLASH_FAIL;
+    }
+
+    uint8_t *flash_ptr = (uint8_t *) address;
+
+    /* Copy length bytes of data from flash memory to the buffer */
+    while (length--)
+    {
+        *rx_buffer++ = *flash_ptr++;
+    }
+
+    return FLASH_SUCCESS;
+}
