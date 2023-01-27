@@ -38,3 +38,8 @@ uint8_t flash_read(uint32_t address, uint8_t *rx_buffer, uint32_t length)
 
     return FLASH_SUCCESS;
 }
+
+uint8_t flash_is_status_bit_set(uint8_t bit_position)
+{
+    return (FLASH->SR & (1 << bit_position)) ? SET : RESET;
+}

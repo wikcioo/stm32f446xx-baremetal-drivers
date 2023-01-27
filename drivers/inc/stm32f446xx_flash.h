@@ -30,6 +30,7 @@
 
 void    flash_init(void);
 uint8_t flash_read(uint32_t address, uint8_t *rx_buffer, uint32_t length);
+uint8_t flash_is_status_bit_set(uint8_t bit_position);
 
 /* Flash register bit positions */
 #define FLASH_ACR_LATENCY   0
