@@ -1,6 +1,12 @@
 #include "stm32f446xx_flash.h"
 #include "stm32f446xx_rcc.h"
 
+#define FLASH_KEY1 (0x45670123)
+#define FLASH_KEY2 (0xCDEF89AB)
+
+static void flash_lock(void);
+static void flash_unlock(void);
+
 void flash_init(void)
 {
     uint32_t system_clock = rcc_get_system_clock_freq();
@@ -42,4 +48,17 @@ uint8_t flash_read(uint32_t address, uint8_t *rx_buffer, uint32_t length)
 uint8_t flash_is_status_bit_set(uint8_t bit_position)
 {
     return (FLASH->SR & (1 << bit_position)) ? SET : RESET;
+}
+
+static void flash_lock(void)
+{
+    FLASH->CR |= (1 << FLASH_CR_LOCK);
+}
+
+static void flash_unlock(void)
+{
+    FLASH->KEYR = FLASH_KEY1;
+    FLASH->KEYR = FLASH_KEY2;
+
+    while (flash_is_status_bit_set(FLASH_SR_BSY));
 }
