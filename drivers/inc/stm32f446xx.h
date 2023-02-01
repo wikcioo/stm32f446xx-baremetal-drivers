@@ -44,6 +44,7 @@
 #define GPIOH_BASE_ADDR         (AHB1PERIPH_BASE_ADDR + 0x1C00U)
 #define CRC_BASE_ADDR           (AHB1PERIPH_BASE_ADDR + 0x3000U)
 #define RCC_BASE_ADDR           (AHB1PERIPH_BASE_ADDR + 0x3800U)
+#define FLASH_INT_REG_BASE_ADDR (AHB1PERIPH_BASE_ADDR + 0x3C00U)
 
 /* Base addresses of peripherals hanging on APB1 bus */
 #define SPI2_BASE_ADDR          (APB1PERIPH_BASE_ADDR + 0x3800U)
@@ -230,7 +231,7 @@ typedef struct
 #define EXTI    ((exti_regdef_t *) EXTI_BASE_ADDR)
 #define RCC     ((rcc_regdef_t *) RCC_BASE_ADDR)
 #define CRC     ((crc_regdef_t *) CRC_BASE_ADDR)
-#define FLASH   ((flash_regdef_t *) FLASH_BASE_ADDR)
+#define FLASH   ((flash_regdef_t *) FLASH_INT_REG_BASE_ADDR)
 
 #define DBGMCU  ((dbgmcu_regdef_t *) DBGMCU_BASE_ADDR)
 
