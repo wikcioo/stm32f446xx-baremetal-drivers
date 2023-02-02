@@ -6,6 +6,7 @@
 
 static void flash_lock(void);
 static void flash_unlock(void);
+static void wait_for_not_busy(void);
 
 void flash_init(void)
 {
@@ -45,6 +46,33 @@ uint8_t flash_read(uint32_t address, uint8_t *rx_buffer, uint32_t length)
     return FLASH_SUCCESS;
 }
 
+void flash_write(uint32_t address, uint8_t *data, uint32_t length)
+{
+    flash_unlock();
+
+    // Hardcoded value for maximum parallelism size for write operations at 3.3V: x32
+    // Used during erase operations of the flash memory
+    // TODO: Unhardcode later
+    FLASH->CR |= 2 << FLASH_CR_PSIZE;
+
+    /* Activate programming mode */
+    FLASH->CR |= 1 << FLASH_CR_PG;
+    
+    // Hardcoded to 32bits because of x32 parallelism
+    uint32_t *data_ptr = (uint32_t *) data;
+    uint32_t no_bytes = (length % 4 == 0 ? (length / 4) : ((length / 4) + 1));
+    uint32_t *flash_ptr = (uint32_t *) address;
+
+    while (no_bytes--)
+    {
+        *flash_ptr++ = *data_ptr++;
+    }
+
+    wait_for_not_busy();
+
+    flash_lock();
+}
+
 uint8_t flash_is_status_bit_set(uint8_t bit_position)
 {
     return (FLASH->SR & (1 << bit_position)) ? SET : RESET;
@@ -60,5 +88,10 @@ static void flash_unlock(void)
     FLASH->KEYR = FLASH_KEY1;
     FLASH->KEYR = FLASH_KEY2;
 
+    wait_for_not_busy();
+}
+
+static void wait_for_not_busy(void)
+{
     while (flash_is_status_bit_set(FLASH_SR_BSY));
 }
