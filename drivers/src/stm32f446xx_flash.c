@@ -25,6 +25,13 @@ void flash_init(void)
 
     // Set the last 4 bits to the ws_value
     FLASH->ACR |= (ws_value & 0xF) << FLASH_ACR_LATENCY;
+
+    // Hardcoded value for maximum parallelism size for write operations at 3.3V: x32
+    // Used during erase operations of the flash memory
+    // TODO: Unhardcode later
+    flash_unlock();
+    FLASH->CR |= 2 << FLASH_CR_PSIZE;
+    flash_lock();
 }
 
 uint8_t flash_read(uint32_t address, uint8_t *rx_buffer, uint32_t length)
@@ -49,11 +56,6 @@ uint8_t flash_read(uint32_t address, uint8_t *rx_buffer, uint32_t length)
 void flash_write(uint32_t address, uint8_t *data, uint32_t length)
 {
     flash_unlock();
-
-    // Hardcoded value for maximum parallelism size for write operations at 3.3V: x32
-    // Used during erase operations of the flash memory
-    // TODO: Unhardcode later
-    FLASH->CR |= 2 << FLASH_CR_PSIZE;
 
     /* Activate programming mode */
     FLASH->CR |= 1 << FLASH_CR_PG;
