@@ -75,6 +75,26 @@ void flash_write(uint32_t address, uint8_t *data, uint32_t length)
     flash_lock();
 }
 
+void flash_sector_erase(uint8_t sector_number)
+{
+    flash_unlock();
+
+    FLASH->CR &= ~0xFF;
+
+    /* Set the sector to be erased */
+    FLASH->CR |= (sector_number & 0xF) << FLASH_CR_SNB;
+
+    /* Activate sector erasing */
+    FLASH->CR |= 1 << FLASH_CR_SER;
+
+    /* Start erasing */
+    FLASH->CR |= 1 << FLASH_CR_STRT;
+
+    wait_for_not_busy();
+
+    flash_lock();
+}
+
 uint8_t flash_is_status_bit_set(uint8_t bit_position)
 {
     return (FLASH->SR & (1 << bit_position)) ? SET : RESET;
