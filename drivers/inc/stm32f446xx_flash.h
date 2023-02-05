@@ -28,10 +28,21 @@
 #define FLASH_SECTOR_7_BASE_ADDR (FLASH_SECTOR_6_BASE_ADDR + FLASH_SECTOR_6_SIZE_KB)
 #define FLASH_END_ADDR           (FLASH_SECTOR_7_BASE_ADDR + FLASH_SECTOR_7_SIZE_KB)
 
+/* Flash sector numbers */
+#define FLASH_SECTOR_0_NUMBER   0
+#define FLASH_SECTOR_1_NUMBER   1
+#define FLASH_SECTOR_2_NUMBER   2
+#define FLASH_SECTOR_3_NUMBER   3
+#define FLASH_SECTOR_4_NUMBER   4
+#define FLASH_SECTOR_5_NUMBER   5
+#define FLASH_SECTOR_6_NUMBER   6
+#define FLASH_SECTOR_7_NUMBER   7
+
 /* Public API function prototypes */
-void    flash_init  (void);
-uint8_t flash_read  (uint32_t address, uint8_t *rx_buffer, uint32_t length);
-void    flash_write (uint32_t address, uint8_t *data, uint32_t length);
+void    flash_init         (void);
+uint8_t flash_read         (uint32_t address, uint8_t *rx_buffer, uint32_t length);
+void    flash_write        (uint32_t address, uint8_t *data, uint32_t length);
+void    flash_sector_erase (uint8_t sector_number);
 
 uint8_t flash_is_status_bit_set(uint8_t bit_position);
 
