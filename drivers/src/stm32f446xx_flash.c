@@ -79,7 +79,8 @@ void flash_sector_erase(uint8_t sector_number)
 {
     flash_unlock();
 
-    FLASH->CR &= ~0xFF;
+    /* Clear the first 7 bits which contain current flash configuration */
+    FLASH->CR &= ~0x7F;
 
     /* Set the sector to be erased */
     FLASH->CR |= (sector_number & 0xF) << FLASH_CR_SNB;
