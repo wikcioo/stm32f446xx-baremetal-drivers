@@ -43,6 +43,7 @@ void    flash_init         (void);
 uint8_t flash_read         (uint32_t address, uint8_t *rx_buffer, uint32_t length);
 void    flash_write        (uint32_t address, uint8_t *data, uint32_t length);
 void    flash_sector_erase (uint8_t sector_number);
+void    flash_mass_erase   (void);
 
 uint8_t flash_is_status_bit_set(uint8_t bit_position);
 

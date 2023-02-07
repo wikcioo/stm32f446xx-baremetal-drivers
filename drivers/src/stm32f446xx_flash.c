@@ -96,6 +96,24 @@ void flash_sector_erase(uint8_t sector_number)
     flash_lock();
 }
 
+void flash_mass_erase(void)
+{
+    flash_unlock();
+
+    /* Clear the first 7 bits which contain current flash configuration */
+    FLASH->CR &= ~0x7F;
+
+    /* Activate mass erase */
+    FLASH->CR |= 1 << FLASH_CR_MER;
+
+    /* Start erasing */
+    FLASH->CR |= 1 << FLASH_CR_STRT;
+
+    wait_for_not_busy();
+
+    flash_lock();
+}
+
 uint8_t flash_is_status_bit_set(uint8_t bit_position)
 {
     return (FLASH->SR & (1 << bit_position)) ? SET : RESET;
