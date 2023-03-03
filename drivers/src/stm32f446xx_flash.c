@@ -114,6 +114,24 @@ void flash_mass_erase(void)
     flash_lock();
 }
 
+void flash_get_protection_level(uint8_t prot_level[8])
+{
+    uint8_t pcrop = (uint8_t) (FLASH->OPTCR >> FLASH_OPTCR_SPRMOD & 1);
+    uint8_t n_wrp = (uint8_t) (FLASH->OPTCR >> FLASH_OPTCR_NWRP & 0xFF);
+
+    for (uint8_t i = 0; i < 8; i++)
+    {
+        uint8_t level = FLASH_PROT_LEVEL0;
+
+        if (n_wrp & (1 << i))
+        {
+            level = pcrop == FLASH_PROT_MODE_ON ? FLASH_PROT_LEVEL2 : FLASH_PROT_LEVEL1;
+        }
+
+        prot_level[i] = level;
+    }
+}
+
 uint8_t flash_is_status_bit_set(uint8_t bit_position)
 {
     return (FLASH->SR & (1 << bit_position)) ? SET : RESET;

@@ -3,10 +3,6 @@
 
 #include "stm32f446xx.h"
 
-/* Generic flash macros */
-#define FLASH_SUCCESS 1
-#define FLASH_FAIL    0
-
 /* Flash sector sizes */
 #define FLASH_SECTOR_0_SIZE_KB (16  * 1024)
 #define FLASH_SECTOR_1_SIZE_KB (16  * 1024)
@@ -38,12 +34,27 @@
 #define FLASH_SECTOR_6_NUMBER   6
 #define FLASH_SECTOR_7_NUMBER   7
 
+/* Flash protection macros */
+#define FLASH_PROT_MODE_ON  1
+#define FLASH_PROT_MODE_OFF 0
+
+#define FLASH_PROT_LEVEL0 0
+#define FLASH_PROT_LEVEL1 1
+#define FLASH_PROT_LEVEL2 2
+
+/* Flash operation result macros */
+#define FLASH_SUCCESS 1
+#define FLASH_FAIL    0
+
 /* Public API function prototypes */
 void    flash_init         (void);
+
 uint8_t flash_read         (uint32_t address, uint8_t *rx_buffer, uint32_t length);
 void    flash_write        (uint32_t address, uint8_t *data, uint32_t length);
 void    flash_sector_erase (uint8_t sector_number);
 void    flash_mass_erase   (void);
+
+void    flash_get_protection_level(uint8_t prot_level[8]);
 
 uint8_t flash_is_status_bit_set(uint8_t bit_position);
 
@@ -68,5 +79,13 @@ uint8_t flash_is_status_bit_set(uint8_t bit_position);
 #define FLASH_CR_EOPIE      24
 #define FLASH_CR_ERRIE      25
 #define FLASH_CR_LOCK       31
+
+#define FLASH_OPTCR_OPTLOCK 0
+#define FLASH_OPTCR_OPTSTRT 1
+#define FLASH_OPTCR_BOR_LEV 2
+#define FLASH_OPTCR_USER    5
+#define FLASH_OPTCR_RDP     8
+#define FLASH_OPTCR_NWRP    16
+#define FLASH_OPTCR_SPRMOD  31
 
 #endif
