@@ -34,6 +34,17 @@
 #define FLASH_SECTOR_6_NUMBER   6
 #define FLASH_SECTOR_7_NUMBER   7
 
+/* Flash sector bit shifts */
+#define FLASH_SECTOR_0 (1 << FLASH_SECTOR_0_NUMBER)
+#define FLASH_SECTOR_1 (1 << FLASH_SECTOR_1_NUMBER)
+#define FLASH_SECTOR_2 (1 << FLASH_SECTOR_2_NUMBER)
+#define FLASH_SECTOR_3 (1 << FLASH_SECTOR_3_NUMBER)
+#define FLASH_SECTOR_4 (1 << FLASH_SECTOR_4_NUMBER)
+#define FLASH_SECTOR_5 (1 << FLASH_SECTOR_5_NUMBER)
+#define FLASH_SECTOR_6 (1 << FLASH_SECTOR_6_NUMBER)
+#define FLASH_SECTOR_7 (1 << FLASH_SECTOR_7_NUMBER)
+#define FLASH_SECTOR_ALL (0xFF)
+
 /* Flash protection macros */
 #define FLASH_PROT_MODE_ON  1
 #define FLASH_PROT_MODE_OFF 0
@@ -55,6 +66,7 @@ void    flash_sector_erase (uint8_t sector_number);
 void    flash_mass_erase   (void);
 
 void    flash_get_protection_level(uint8_t prot_level[8]);
+void    flash_set_protection_level(uint8_t prot_level, uint8_t sectors);
 
 uint8_t flash_is_status_bit_set(uint8_t bit_position);
 

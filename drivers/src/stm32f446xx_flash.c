@@ -4,8 +4,15 @@
 #define FLASH_KEY1 (0x45670123)
 #define FLASH_KEY2 (0xCDEF89AB)
 
+#define FLASH_OPT_KEY1 (0x08192A3B)
+#define FLASH_OPT_KEY2 (0x4C5D6E7F)
+
 static void flash_lock(void);
 static void flash_unlock(void);
+
+static void flash_opt_lock(void);
+static void flash_opt_unlock(void);
+
 static void wait_for_not_busy(void);
 
 void flash_init(void)
@@ -138,6 +145,54 @@ void flash_get_protection_level(uint8_t prot_level[8])
     }
 }
 
+/*
+ * Example usage to set the write protection of sectors 0 and 1
+ * flash_set_protection_level(FLASH_PROT_WRITE, FLASH_SECTOR_0 | FLASH_SECTOR_1)
+ */
+void flash_set_protection_level(uint8_t prot_level, uint8_t sectors)
+{
+    flash_opt_unlock();
+
+    if (prot_level == FLASH_PROT_READ_WRITE)
+    {
+        /* Enable PCROP */
+        /* nWRP bit 0 is not active, 1 is active*/
+        FLASH->OPTCR |= 1 << FLASH_OPTCR_SPRMOD;
+
+        /* Clear nWRP, thus setting all sectors as not active */
+        FLASH->OPTCR &= ~(0xFF << FLASH_OPTCR_NWRP);
+        /* Set the bits which are to be active */
+        FLASH->OPTCR |= sectors << FLASH_OPTCR_NWRP;
+    }
+    else if (prot_level == FLASH_PROT_WRITE)
+    {
+        /* Disable PCROP */
+        /* nWRP bit 0 is active, 1 is not active*/
+        FLASH->OPTCR &= ~(1 << FLASH_OPTCR_SPRMOD);
+
+        /* Set nWRP to 0xFF, thus not active */
+        FLASH->OPTCR |= 0xFF << FLASH_OPTCR_NWRP;
+        /* Invert the bits of 'sectors' to clear bits which are to be active */
+        FLASH->OPTCR &= ~(sectors << FLASH_OPTCR_NWRP);
+    }
+    else
+    {
+        /* Disable PCROP */
+        /* nWRP bit 0 is active, 1 is not active*/
+        FLASH->OPTCR &= ~(1 << FLASH_OPTCR_SPRMOD);
+
+        /* Set nWRP to 0xFF, thus not active */
+        FLASH->OPTCR |= sectors << FLASH_OPTCR_NWRP;
+    }
+
+    /* Apply the changes */
+    FLASH->OPTCR |= 1 << FLASH_OPTCR_OPTSTRT;
+
+    wait_for_not_busy();
+
+    flash_opt_lock();
+}
+
 uint8_t flash_is_status_bit_set(uint8_t bit_position)
 {
     return (FLASH->SR & (1 << bit_position)) ? SET : RESET;
@@ -152,6 +207,19 @@ static void flash_unlock(void)
 {
     FLASH->KEYR = FLASH_KEY1;
     FLASH->KEYR = FLASH_KEY2;
+
+    wait_for_not_busy();
+}
+
+static void flash_opt_lock(void)
+{
+    FLASH->OPTCR |= (1 << FLASH_OPTCR_OPTLOCK);
+}
+
+static void flash_opt_unlock(void)
+{
+    FLASH->OPTKEYR = FLASH_OPT_KEY1;
+    FLASH->OPTKEYR = FLASH_OPT_KEY2;
 
     wait_for_not_busy();
 }
