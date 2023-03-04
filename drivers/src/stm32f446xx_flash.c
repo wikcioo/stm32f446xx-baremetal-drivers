@@ -123,9 +123,15 @@ void flash_get_protection_level(uint8_t prot_level[8])
     {
         uint8_t level = FLASH_PROT_NONE;
 
-        if (n_wrp & (1 << i))
+        /* Read and write protection when pcrop is 1 and the bit in nWRP is 1 */
+        if ( (pcrop == FLASH_PROT_MODE_ON) && (n_wrp & (1 << i)) )
         {
-            level = pcrop == FLASH_PROT_MODE_ON ? FLASH_PROT_READ_WRITE : FLASH_PROT_WRITE;
+            level = FLASH_PROT_READ_WRITE;
+        }
+        /* Write protection when pcrop is 0 and the bit in nWRP is 0 */
+        else if ( (pcrop == FLASH_PROT_MODE_OFF) && (!(n_wrp & (1 << i))) )
+        {
+            level = FLASH_PROT_WRITE;
         }
 
         prot_level[i] = level;
