@@ -11,7 +11,7 @@
 - [x] crc
 - [ ] timer
 - [ ] pwm
-- [x] flash (read, write, erase)
+- [x] flash (read, write, erase, memory protection)
 
 ## How to build and flash?
 **Note: this project has only been tested on Linux**
