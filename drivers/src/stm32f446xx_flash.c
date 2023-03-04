@@ -121,11 +121,11 @@ void flash_get_protection_level(uint8_t prot_level[8])
 
     for (uint8_t i = 0; i < 8; i++)
     {
-        uint8_t level = FLASH_PROT_LEVEL0;
+        uint8_t level = FLASH_PROT_NONE;
 
         if (n_wrp & (1 << i))
         {
-            level = pcrop == FLASH_PROT_MODE_ON ? FLASH_PROT_LEVEL2 : FLASH_PROT_LEVEL1;
+            level = pcrop == FLASH_PROT_MODE_ON ? FLASH_PROT_READ_WRITE : FLASH_PROT_WRITE;
         }
 
         prot_level[i] = level;

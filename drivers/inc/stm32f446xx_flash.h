@@ -38,9 +38,9 @@
 #define FLASH_PROT_MODE_ON  1
 #define FLASH_PROT_MODE_OFF 0
 
-#define FLASH_PROT_LEVEL0 0
-#define FLASH_PROT_LEVEL1 1
-#define FLASH_PROT_LEVEL2 2
+#define FLASH_PROT_NONE       0
+#define FLASH_PROT_WRITE      1
+#define FLASH_PROT_READ_WRITE 2
 
 /* Flash operation result macros */
 #define FLASH_SUCCESS 1
